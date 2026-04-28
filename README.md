@@ -31,7 +31,15 @@ O processo é feito via scripts em Python, estruturados para permitir reutiliza�
 
 ### 💾 Armazenamento dos Dados
 
-Na camada bronze, nossos dados estarão consolidados em formato `Delta` com histórico de modificações, facilitando suas consultas. Além disso, teremos uma representação fiel de como este dado poderia ser encontrado em sua origem.
+Os dados coletados são armazenados inicialmente em formato **Parquet**, garantindo eficiência de leitura e organização.
+
+Além disso, o projeto utiliza o **Azure Blob Storage** como camada de armazenamento de objetos (Data Lake), permitindo:
+
+- Escalabilidade
+- Persistência dos dados brutos
+- Organização em estrutura hierárquica (f1/results/...)
+
+Essa abordagem simula um ambiente real de engenharia de dados, substituindo o uso de AWS S3 por Azure.
 
 ### 🥉 Camada Bronze
 
@@ -76,13 +84,15 @@ Futuramente, será desenvolvida uma aplicação para visualização dos dados e 
 - Dashboards interativos
 
 ## ⚙️ Tecnologias Utilizadas
+
 - Python
 - Pandas
 - FastF1
 - Parquet
+- Azure Blob Storage
 - Git & GitHub
 
-(em evolução: AWS, MLFlow, Streamlit)
+(em evolução: Azure Blob Storage, MLFlow, Streamlit)
 
 ## 🚀 Objetivo
 
