@@ -1,4 +1,5 @@
 # %%
+
 import fastf1
 import pandas as pd
 import time
@@ -21,23 +22,31 @@ class CollectResults:
             return pd.DataFrame()
 
         session._load_drivers_results()
-
         df = session.results
-        df["Mode"] = mode
+
+        df["year"] = session.date.year
+        df["Date"] = session.date
+        df["Mode"] = session.name
+        df["RoundNumber"] = session.event["RoundNumber"]
+        df["OfficialEventName"] = session.event["OfficialEventName"]
+        df["Country"] = session.event["Country"]
+        df["Location"] = session.event["Location"]
 
         return df
     
-    def save_data(self, df, year, gp, mode):
-        df.to_parquet(f"data/{year}_{gp:02}_{mode}.parquet")
+    def save_data(self, df:pd.DataFrame, year: int, gp: int, mode: str):
+        filename = f"data/{year}_{gp:02}_{mode}.parquet"
 
-    def process(self, year, gp, mode):
+        df.to_parquet(filename, index=False)
+
+    def process(self, year: int, gp: int, mode: str):
         df = self.get_data(year, gp, mode)
 
         if df.empty:
             return False
         
         self.save_data(df, year, gp, mode)
-        return True\
+        return True
     
     def process_year_modes(self, year):
         for i in range(1,50):
@@ -53,13 +62,18 @@ class CollectResults:
 
 # %%
 
-if __name__ == "__main__":
+parser = argparse.ArgumentParser()
+parser.add_argument("--start", type=int, default=0)
+parser.add_argument("--stop", type=int, default=0)
+parser.add_argument("--years", "-y", nargs="+", type=int)
+parser.add_argument("--modes", "-m", nargs="+")
+args = parser.parse_args()
 
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--years", "-y", nargs="+", type=int)
-    parser.add_argument("--modes", "-m", nargs="+")
-
-    args = parser.parse_args()
-
+if args.years:
     collect = CollectResults(args.years, args.modes)
-    collect.process_years()
+
+elif args.start and args.stop:
+    years = [i for i in range(args.start, args.stop+1)]
+    collect = CollectResults(years, args.modes)
+
+collect.process_years()
